@@ -1,69 +1,78 @@
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import type React from "react";
+
 import { useState } from "react";
-import admin from "../../database/admin.json";
+import { Modal, Form, Input, Button, Typography, Alert } from "antd";
+import admin from "../database/admin.json";
 import { useAuthStore } from "@/store/authStore";
 
-const LoginModal = () => {
-  const [error, setError] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false)
+const { Title, Text } = Typography;
+
+const LoginModal: React.FC = () => {
+  const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
   const login = useAuthStore((state) => state.login);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleFinish = async (values: { password: string }) => {
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    if (password !== admin.password) {
+    setError("");
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    if (values.password !== admin.password) {
       setError("Incorrect password");
-      setIsLoading(false)
+      setIsLoading(false);
       return;
     }
-    login(); 
-    setError("");
-    setIsLoading(false)
-  };
-  return (
-    <Dialog open={!isLoggedIn}>
-      <DialogContent className="sm:max-w-sm [&>button]:hidden">
-        <DialogHeader>
-          <DialogTitle>🐺 Werewolf</DialogTitle>
-          <DialogDescription>For game master only</DialogDescription>
-        </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              required
-              onFocus={() => setError("")}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            {error && <p className="text-destructive">{error}</p>}
-          </div>
-          <DialogFooter className="pt-2">
-            <Button type="submit" className="w-full" disabled={isLoading || !password.trim()}>
-              {isLoading ? "Loading..." : "Log in"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+    login();
+    setIsLoading(false);
+  };
+
+  return (
+    <Modal
+      open={!isLoggedIn}
+      footer={null}
+      closable={false}
+      centered
+      width={360}
+    >
+      <div className="text-center mb-6">
+        <Title level={3} className="mb-1">
+          🐺 Werewolf
+        </Title>
+        <Text type="secondary">For game master only</Text>
+      </div>
+
+      <Form layout="vertical" onFinish={handleFinish} autoComplete="off">
+        <Form.Item
+          label="Password"
+          name="password"
+          rules={[{ required: true, message: "Please enter password" }]}
+        >
+          <Input.Password
+            placeholder="Enter password"
+            onFocus={() => setError("")}
+          />
+        </Form.Item>
+
+        {error && (
+          <Alert
+            type="error"
+            title={error}
+            showIcon
+            className="mb-4"
+          />
+        )}
+
+        <Form.Item>
+          <Button type="primary" htmlType="submit" loading={isLoading} block>
+            Log in
+          </Button>
+        </Form.Item>
+      </Form>
+    </Modal>
   );
 };
 

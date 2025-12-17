@@ -1,5 +1,5 @@
+import DashBoard from "./components/Dashboard";
 import LoginModal from "./components/LoginModal";
-import DashBoard from "./components/DashBoard";
 import { useAuthStore } from "./store/authStore";
 
 function App() {
