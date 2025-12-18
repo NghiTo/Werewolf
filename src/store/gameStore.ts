@@ -1,12 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export interface Role {
-  id: string;
-  name: string;
-  image: string;
-}
-
 export type GameStep =
   | "PLAYER_COUNT"
   | "ROLE_SELECTION"

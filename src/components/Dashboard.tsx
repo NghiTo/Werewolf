@@ -4,14 +4,24 @@ import { useAuthStore } from "@/store/authStore";
 import ChoosePlayerNumber from "./ChoosePlayerNumber";
 import { useGameStore } from "@/store/gameStore";
 import RoleSelection from "./RoleSelection";
+import RoleAssignment from "./RoleAssignment";
+import Game from "./Game/Game";
+import { useGameDataStore } from "@/store/dataStore";
 
 const { Title, Text } = Typography;
 
 export default function DashBoard() {
   const { logout } = useAuthStore();
   const { step, resetGame } = useGameStore();
+  const { resetGameData } = useGameDataStore();
+
+  const handleResetGame = () => {
+    resetGameData();
+    resetGame();
+  }
 
   const handleLogout = () => {
+    resetGameData()
     resetGame();
     logout();
   };
@@ -34,7 +44,7 @@ export default function DashBoard() {
 
         <div className="flex justify-end mb-4">
           {step !== "PLAYER_COUNT" && (
-            <Button type="text" icon={<UndoOutlined />} onClick={resetGame}>
+            <Button type="text" icon={<UndoOutlined />} onClick={handleResetGame}>
               Reset game
             </Button>
           )}
@@ -45,6 +55,10 @@ export default function DashBoard() {
         {step === "PLAYER_COUNT" && <ChoosePlayerNumber />}
 
         {step === "ROLE_SELECTION" && <RoleSelection />}
+
+        {step === "ROLE_ASSIGNMENT" && <RoleAssignment />}
+
+        {step === "IN_GAME" && <Game />}
 
         <Text type="secondary" className="block text-center mt-6 text-xs">
           Tip: Ideal games work best with 6–12 players

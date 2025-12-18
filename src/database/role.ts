@@ -92,3 +92,5 @@ export const ROLES = [
     side: "village",
   }
 ];
+
+export const ROLE_ORDER = ["cupid","dire-wolf", "werewolf", "cult-leader"];
