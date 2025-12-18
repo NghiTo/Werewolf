@@ -1,20 +1,28 @@
 import { ROLE_ORDER } from "@/database/role";
-import { useGameDataStore, type Player } from "@/store/dataStore";
-import { Button, Card, Typography } from "antd";
+import { useGameDataStore } from "@/store/dataStore";
+import { Button, Card, Modal, Typography } from "antd";
 import { useState } from "react";
 import Night from "./Night";
 import Day from "./Day";
 import ResultModal from "./ResultModal";
+import type { NightAction, Player } from "@/utils/interfaces";
+import { FastForwardOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
 
 export default function Game() {
-  const { players, phase, setPhase, setPlayers, setWinner } =
+  const { players, phase, setPhase, setPlayers, setWinner, setWitchState } =
     useGameDataStore();
-  const [wolfTarget, setWolfTarget] = useState<number | null>(null);
   const [hasVoted, setHasVoted] = useState(false);
+  const [nightActions, setNightActions] = useState<NightAction>({});
 
-  const calledPlayers = players.filter((p) => ROLE_ORDER.includes(p.roleId));
+  const roleOrderMap = Object.fromEntries(
+    ROLE_ORDER.map((roleId, index) => [roleId, index])
+  );
+
+  const calledPlayers = players
+    .filter((p) => ROLE_ORDER.includes(p.roleId))
+    .sort((a, b) => roleOrderMap[a.roleId] - roleOrderMap[b.roleId]);
 
   const checkWinCondition = (players: Player[]) => {
     const alivePlayers = players.filter((p) => p.alive);
@@ -33,48 +41,123 @@ export default function Game() {
 
   const handleStartDay = () => {
     if (phase === "NIGHT") {
-      if (!wolfTarget) return;
-      const updatedPlayers = players.map((p) =>
-        p.id === wolfTarget ? { ...p, alive: false } : p
-      );
+      const wolfTarget = nightActions.werewolf;
+      const guardTarget = nightActions.bodyguard;
+      const witchTarget = nightActions.witch;
 
+      if (!wolfTarget) return;
+
+      let updatedPlayers = [...players];
+
+      if (wolfTarget !== guardTarget && !witchTarget?.save) {
+        updatedPlayers = players.map((p) =>
+          p.id === wolfTarget ? { ...p, alive: false } : p
+        );
+      }
+
+      if (witchTarget?.kill !== undefined) {
+        updatedPlayers = players.map((p) =>
+          p.id === witchTarget.kill ? { ...p, alive: false } : p
+        );
+      }
+      setWitchState({
+        usedSave: witchTarget?.save || false,
+        usedKill: witchTarget?.kill === undefined ? false : true,
+      });
       setPlayers(updatedPlayers);
-      setWolfTarget(null);
+      setNightActions({});
+      setHasVoted(false);
+
       const result = checkWinCondition(updatedPlayers);
       if (result) {
         setWinner(result);
         return;
       }
+
       setPhase("DAY");
     } else {
       setPhase("NIGHT");
     }
   };
 
+  const handleSkipVote = () => {
+    Modal.confirm({
+      title: "Confirm execution",
+      content: `Are you sure to skip vote ?`,
+      okText: "Skip",
+      okType: "primary",
+      cancelText: "Cancel",
+      centered: true,
+      onOk: () => setPhase("NIGHT"),
+    });
+  };
+
+  const checkEnabled = () => {
+    if (phase === "DAY") {
+      return !hasVoted;
+    }
+
+    const aliveRoles = players.filter((p) => p.alive).map((p) => p.roleId);
+
+    const wolfAlive = aliveRoles.includes("werewolf");
+    const guardAlive = aliveRoles.includes("bodyguard");
+
+    if (wolfAlive && nightActions.werewolf === undefined) {
+      return true;
+    }
+
+    if (guardAlive && nightActions.bodyguard === undefined) {
+      return true;
+    }
+
+    return false;
+  };
+
   return (
     <>
       <ResultModal />
       <Card className="rounded-2xl">
-        <Title level={3}>{phase === "NIGHT" ? "🌙 Night" : "Day"} phase</Title>
-        {phase === "NIGHT" &&
-          calledPlayers.map((role, id) => {
-            return (
-              <Night
-                key={id}
-                role={role}
-                wolfTarget={wolfTarget}
-                setWolfTarget={setWolfTarget}
-              />
-            );
-          })}
+        <div className="flex flex-row items-center justify-between">
+          <Title level={3}>
+            {phase === "NIGHT" ? "🌙 Night" : "Day"} phase
+          </Title>
+          {phase === "DAY" && (
+            <Button
+              type="text"
+              icon={<FastForwardOutlined />}
+              onClick={handleSkipVote}
+            >
+              Skip vote
+            </Button>
+          )}
+        </div>
+        <div className="max-h-[520px] overflow-y-auto flex flex-col gap-2">
+          {phase === "NIGHT" &&
+            calledPlayers.map((role) => {
+              return (
+                <Night
+                  key={role.id}
+                  role={role}
+                  nightActions={nightActions}
+                  setNightActions={setNightActions}
+                />
+              );
+            })}
+        </div>
 
-        {phase === "DAY" && <Day checkWinCondition={checkWinCondition} setHasVoted={setHasVoted}/>}
+        {phase === "DAY" && (
+          <Day
+            checkWinCondition={checkWinCondition}
+            hasVoted={hasVoted}
+            setHasVoted={setHasVoted}
+          />
+        )}
         <Button
           type="primary"
           block
           size="large"
           className="mt-4"
-          disabled={wolfTarget === null && !hasVoted}
+          disabled={checkEnabled()}
           onClick={handleStartDay}
         >
           Start {phase === "NIGHT" ? "Day" : "Night"}

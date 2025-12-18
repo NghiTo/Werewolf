@@ -72,7 +72,7 @@ export default function RoleAssignment() {
         {assignments.filter((a) => a.playerName).length} / {playerCount} filled
       </Text>
 
-      <div className="mt-6 max-h-[480px] overflow-y-auto">
+      <div className="mt-6 max-h-[520px] overflow-y-auto">
         {assignments.map((a, i) => (
           <Card
             key={`${a.roleId}-${i}`}

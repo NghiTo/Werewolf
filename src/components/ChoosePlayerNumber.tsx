@@ -49,7 +49,7 @@ const ChoosePlayerNumber = () => {
             <InputNumber
               value={playerCount}
               onChange={setPlayerCount}
-              placeholder="3 – 30"
+              placeholder="3 – 20"
               style={{width: "100%"}}
               className="h-10"
             />

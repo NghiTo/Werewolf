@@ -36,7 +36,7 @@ export default function DashBoard() {
     >
       <div className="max-w-[480px] m-auto">
         <div style={{ textAlign: "center", padding: "20px 0" }}>
-          <Title level={1} className="mb-2">
+          <Title level={1}>
             🐺 Werewolf
           </Title>
           <Text type="secondary">Game master dashboard</Text>
@@ -59,10 +59,6 @@ export default function DashBoard() {
         {step === "ROLE_ASSIGNMENT" && <RoleAssignment />}
 
         {step === "IN_GAME" && <Game />}
-
-        <Text type="secondary" className="block text-center mt-6 text-xs">
-          Tip: Ideal games work best with 6–12 players
-        </Text>
       </div>
     </main>
   );

@@ -90,7 +90,14 @@ export const ROLES = [
     name: "Cupid",
     image: "/src/assets/cupid.png",
     side: "village",
-  }
+  },
 ];
 
-export const ROLE_ORDER = ["cupid","dire-wolf", "werewolf", "cult-leader"];
+export const ROLE_ORDER = [
+  "cupid",
+  "dire-wolf",
+  "werewolf",
+  "witch",
+  "bodyguard",
+  "cult-leader",
+];

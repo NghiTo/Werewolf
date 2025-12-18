@@ -1,21 +1,17 @@
+import type { Player } from "@/utils/interfaces";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
-export interface Player {
-  id: number;
-  name: string;
-  roleId: string;
-  alive: boolean;
-}
 
 interface GameDataState {
   players: Player[];
   phase: string;
   winner: string | null;
+  witchState: { usedSave: boolean; usedKill: boolean };
 
   setPlayers: (players: Player[]) => void;
   setWinner: (winners: string | null) => void;
   setPhase: (phase: string) => void;
+  setWitchState: (witchState: { usedSave: boolean; usedKill: boolean }) => void;
   resetGameData: () => void;
 }
 
@@ -23,6 +19,10 @@ const initialState = {
   players: [],
   phase: "NIGHT",
   winner: null,
+  witchState: {
+    usedSave: false,
+    usedKill: false,
+  },
 };
 
 export const useGameDataStore = create<GameDataState>()(
@@ -38,6 +38,8 @@ export const useGameDataStore = create<GameDataState>()(
       setPhase: (phase) => set({ phase }),
 
       setWinner: (winner) => set({ winner }),
+
+      setWitchState: (witchState) => set({ witchState }),
 
       resetGameData: () => {
         set({ ...initialState });

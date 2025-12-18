@@ -7,10 +7,11 @@ const { Title, Text } = Typography;
 
 interface DayProps {
   checkWinCondition: (players: any) => string | null;
+  hasVoted: boolean;
   setHasVoted: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function Day({ checkWinCondition, setHasVoted }: DayProps) {
+export default function Day({ checkWinCondition, hasVoted, setHasVoted }: DayProps) {
   const { players, setPlayers, setWinner } = useGameDataStore();
 
   const alivePlayers = players.filter((p) => p.alive);
@@ -79,6 +80,7 @@ export default function Day({ checkWinCondition, setHasVoted }: DayProps) {
             <Button
               danger
               size="small"
+              disabled={hasVoted}
               onClick={() => handleVoteKill(player.id, player.name)}
             >
               Vote
@@ -100,7 +102,7 @@ export default function Day({ checkWinCondition, setHasVoted }: DayProps) {
           }
           className="rounded-xl"
         >
-          <Row gutter={[0, 12]}>
+          <Row gutter={[0, 12]} className="max-h-64 overflow-y-auto">
             {alivePlayers.length === 0 && (
               <Text type="secondary">No one alive</Text>
             )}
@@ -122,7 +124,7 @@ export default function Day({ checkWinCondition, setHasVoted }: DayProps) {
           }
           className="rounded-xl"
         >
-          <Row gutter={[0, 12]}>
+          <Row gutter={[0, 12]} className="max-h-64 overflow-y-auto">
             {deadPlayers.length === 0 && (
               <Text type="secondary">No one dead yet</Text>
             )}
