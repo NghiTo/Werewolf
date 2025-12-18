@@ -44,26 +44,38 @@ export default function Game() {
       const wolfTarget = nightActions.werewolf;
       const guardTarget = nightActions.bodyguard;
       const witchTarget = nightActions.witch;
+      const hunterTarget = nightActions.hunter;
 
       if (!wolfTarget) return;
 
       let updatedPlayers = [...players];
+      const deadIds = new Set<number>();
 
       if (wolfTarget !== guardTarget && !witchTarget?.save) {
-        updatedPlayers = players.map((p) =>
-          p.id === wolfTarget ? { ...p, alive: false } : p
-        );
+        deadIds.add(wolfTarget);
       }
 
       if (witchTarget?.kill !== undefined) {
-        updatedPlayers = players.map((p) =>
-          p.id === witchTarget.kill ? { ...p, alive: false } : p
-        );
+        deadIds.add(witchTarget.kill);
       }
+
+      const hunter = players.find((p) => p.roleId === "hunter" && p.alive);
+
+      const hunterDies = hunter && deadIds.has(hunter.id);
+
+      if (hunterDies && hunterTarget !== undefined) {
+        deadIds.add(hunterTarget);
+      }
+
+      updatedPlayers = players.map((p) =>
+        deadIds.has(p.id) ? { ...p, alive: false } : p
+      );
+
       setWitchState({
-        usedSave: witchTarget?.save || false,
-        usedKill: witchTarget?.kill === undefined ? false : true,
+        usedSave: !!witchTarget?.save,
+        usedKill: witchTarget?.kill !== undefined,
       });
+
       setPlayers(updatedPlayers);
       setNightActions({});
       setHasVoted(false);
@@ -102,6 +114,7 @@ export default function Game() {
     const wolfAlive = aliveRoles.includes("werewolf");
     const guardAlive = aliveRoles.includes("bodyguard");
     const seerAlive = aliveRoles.includes("seer");
+    const hunterAlive = aliveRoles.includes("hunter");
 
     if (seerAlive && nightActions.seer === undefined) {
       return true;
@@ -112,6 +125,10 @@ export default function Game() {
     }
 
     if (guardAlive && nightActions.bodyguard === undefined) {
+      return true;
+    }
+
+    if (hunterAlive && nightActions.hunter === undefined) {
       return true;
     }
 

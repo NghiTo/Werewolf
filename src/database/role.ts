@@ -100,5 +100,6 @@ export const ROLE_ORDER = [
   "werewolf",
   "witch",
   "bodyguard",
+  "hunter",
   "cult-leader",
 ];

@@ -2,6 +2,7 @@ import { ROLES } from "@/database/role";
 import { useGameDataStore } from "@/store/dataStore";
 import type { NightAction, Player } from "@/utils/interfaces";
 import { Card, Checkbox, Image, Select, Typography } from "antd";
+import { useEffect } from "react";
 
 const { Title, Text } = Typography;
 
@@ -12,7 +13,7 @@ interface NightProps {
 }
 
 const Night = ({ role, nightActions, setNightActions }: NightProps) => {
-  const { players, witchState } = useGameDataStore();
+  const { players, witchState, setWinner } = useGameDataStore();
 
   const checkAction = (roleId: string) => {
     switch (roleId) {
@@ -22,6 +23,8 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
         return "Choose target to protect";
       case "seer":
         return "Choose target to see";
+      case "hunter":
+        return "Choose target to kill";
     }
   };
 
@@ -53,6 +56,14 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
           }));
     }
   };
+
+  useEffect(() => {
+    const alivePlayers = players.filter((p) => p.alive);
+    const aliveWolves = alivePlayers.filter((p) => p.roleId === "werewolf");
+    if (aliveWolves.length === alivePlayers.length - aliveWolves.length - 1) {
+      setWinner("WOLF")
+    }
+  }, []);
 
   return (
     <Card
