@@ -8,6 +8,7 @@ export interface Player {
 export interface NightAction {
   werewolf?: number;
   bodyguard?: number;
+  seer?: number;
   witch?: {
     save?: boolean;
     kill?: number;

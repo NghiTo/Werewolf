@@ -20,6 +20,8 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
         return "Choose target to kill";
       case "bodyguard":
         return "Choose target to protect";
+      case "seer":
+        return "Choose target to see";
     }
   };
 
@@ -35,7 +37,6 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
             label: `${p.name} (${p.roleId})`,
             value: p.id,
           }));
-
       case "bodyguard":
         return players
           .filter((p) => p.alive)
@@ -43,15 +44,13 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
             label: `${p.name} (${p.roleId})`,
             value: p.id,
           }));
-      case "witch":
+      default:
         return players
           .filter((p) => p.alive && p.id !== role.id)
           .map((p) => ({
             label: `${p.name} (${p.roleId})`,
             value: p.id,
           }));
-      default:
-        return [];
     }
   };
 

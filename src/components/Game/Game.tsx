@@ -101,6 +101,11 @@ export default function Game() {
 
     const wolfAlive = aliveRoles.includes("werewolf");
     const guardAlive = aliveRoles.includes("bodyguard");
+    const seerAlive = aliveRoles.includes("seer");
+
+    if (seerAlive && nightActions.seer === undefined) {
+      return true;
+    }
 
     if (wolfAlive && nightActions.werewolf === undefined) {
       return true;

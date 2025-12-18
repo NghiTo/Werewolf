@@ -95,6 +95,7 @@ export const ROLES = [
 
 export const ROLE_ORDER = [
   "cupid",
+  "seer",
   "dire-wolf",
   "werewolf",
   "witch",
