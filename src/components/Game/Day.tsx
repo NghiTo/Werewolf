@@ -29,6 +29,11 @@ export default function Day({ checkWinCondition, hasVoted, setHasVoted }: DayPro
       cancelText: "Cancel",
       centered: true,
       onOk: () => {
+        if (players.find((p) => p.id === playerId)?.roleId === "tanner") {
+          setWinner("THIRD");
+          return
+        };
+
         const updatedPlayers = players.map((p) =>
           p.id === playerId ? { ...p, alive: false } : p
         );
