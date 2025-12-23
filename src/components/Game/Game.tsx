@@ -11,8 +11,17 @@ import { FastForwardOutlined } from "@ant-design/icons";
 const { Title } = Typography;
 
 export default function Game() {
-  const { players, phase, setPhase, setPlayers, setWinner, setWitchState } =
-    useGameDataStore();
+  const {
+    players,
+    phase,
+    setPhase,
+    setPlayers,
+    setWinner,
+    setWitchState,
+    turn,
+    setTurn,
+    setDoppelgangerState,
+  } = useGameDataStore();
   const [hasVoted, setHasVoted] = useState(false);
   const [nightActions, setNightActions] = useState<NightAction>({});
 
@@ -45,6 +54,7 @@ export default function Game() {
       const guardTarget = nightActions.bodyguard;
       const witchTarget = nightActions.witch;
       const hunterTarget = nightActions.hunter;
+      const doppelgangerTarget = nightActions.doppelganger;
 
       if (!wolfTarget) return;
 
@@ -60,6 +70,12 @@ export default function Game() {
       }
 
       const hunter = players.find((p) => p.roleId === "hunter" && p.alive);
+      const doppelganger = players.find(
+        (p) => p.roleId === "doppelganger" && p.alive
+      );
+      const doppelgangerNewRole = players.find(
+        (p) => p.id === doppelgangerTarget
+      )?.roleId;
 
       const hunterDies = hunter && deadIds.has(hunter.id);
 
@@ -67,15 +83,26 @@ export default function Game() {
         deadIds.add(hunterTarget);
       }
 
-      updatedPlayers = players.map((p) =>
+      if (
+        doppelganger &&
+        doppelgangerTarget &&
+        deadIds.has(doppelgangerTarget) &&
+        doppelgangerNewRole
+      ) {
+        updatedPlayers = updatedPlayers.map((p) =>
+          p.id === doppelganger.id ? { ...p, roleId: doppelgangerNewRole } : p
+        );
+      }
+
+      updatedPlayers = updatedPlayers.map((p) =>
         deadIds.has(p.id) ? { ...p, alive: false } : p
       );
 
+      setDoppelgangerState(doppelgangerTarget ?? null);
       setWitchState({
         usedSave: !!witchTarget?.save,
         usedKill: witchTarget?.kill !== undefined,
       });
-
       setPlayers(updatedPlayers);
       setNightActions({});
       setHasVoted(false);
@@ -100,7 +127,10 @@ export default function Game() {
       okType: "primary",
       cancelText: "Cancel",
       centered: true,
-      onOk: () => setPhase("NIGHT"),
+      onOk: () => {
+        setTurn(turn + 1);
+        setPhase("NIGHT");
+      },
     });
   };
 
@@ -115,6 +145,15 @@ export default function Game() {
     const guardAlive = aliveRoles.includes("bodyguard");
     const seerAlive = aliveRoles.includes("seer");
     const hunterAlive = aliveRoles.includes("hunter");
+    const spellcaster = aliveRoles.includes("spellcaster");
+
+    if (nightActions.doppelganger === undefined && turn === 1) {
+      return true;
+    }
+
+    if (spellcaster && nightActions.spellcaster === undefined) {
+      return true;
+    }
 
     if (seerAlive && nightActions.seer === undefined) {
       return true;
@@ -143,7 +182,7 @@ export default function Game() {
           <Title level={3}>
             {phase === "NIGHT" ? "🌙 Night" : "Day"} phase
           </Title>
-          {phase === "DAY" && (
+          {phase === "DAY" && !hasVoted && (
             <Button
               type="text"
               icon={<FastForwardOutlined />}

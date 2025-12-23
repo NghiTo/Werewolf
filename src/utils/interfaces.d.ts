@@ -10,6 +10,8 @@ export interface NightAction {
   bodyguard?: number;
   seer?: number;
   hunter?: number;
+  spellcaster?: number;
+  doppelganger?: number;
   witch?: {
     save?: boolean;
     kill?: number;

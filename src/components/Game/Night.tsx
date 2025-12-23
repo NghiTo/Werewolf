@@ -13,7 +13,7 @@ interface NightProps {
 }
 
 const Night = ({ role, nightActions, setNightActions }: NightProps) => {
-  const { players, witchState, setWinner } = useGameDataStore();
+  const { players, witchState, setWinner, turn } = useGameDataStore();
 
   const checkAction = (roleId: string) => {
     switch (roleId) {
@@ -27,6 +27,8 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
         return "Choose target to kill";
       case "spellcaster": 
         return "Choose target to be silented";
+      case "doppelganger":
+        return "Choose target to copy";
     }
   };
 
@@ -58,6 +60,12 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
           }));
     }
   };
+
+  const disableSelect = () => {
+    if (!role.alive) return true;
+    if (role.roleId === "doppelganger" && turn > 1) return true
+    return false
+  }
 
   useEffect(() => {
     const alivePlayers = players.filter((p) => p.alive);
@@ -123,7 +131,7 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
           <>
             <Title level={5}>{checkAction(role.roleId)}</Title>
             <Select
-              disabled={!role.alive}
+              disabled={disableSelect()}
               style={{ width: "100%" }}
               placeholder="Select a player"
               onChange={(value) =>

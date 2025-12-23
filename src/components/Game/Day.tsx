@@ -11,8 +11,13 @@ interface DayProps {
   setHasVoted: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function Day({ checkWinCondition, hasVoted, setHasVoted }: DayProps) {
-  const { players, setPlayers, setWinner } = useGameDataStore();
+export default function Day({
+  checkWinCondition,
+  hasVoted,
+  setHasVoted,
+}: DayProps) {
+  const { players, setPlayers, setWinner, setTurn, turn, doppelgangerState } =
+    useGameDataStore();
 
   const alivePlayers = players.filter((p) => p.alive);
   const deadPlayers = players.filter((p) => !p.alive);
@@ -29,12 +34,24 @@ export default function Day({ checkWinCondition, hasVoted, setHasVoted }: DayPro
       cancelText: "Cancel",
       centered: true,
       onOk: () => {
-        if (players.find((p) => p.id === playerId)?.roleId === "tanner") {
+        const targetRole = players.find((p) => p.id === playerId)?.roleId;
+        const doppelganger = players.find(
+          (p) => p.roleId === "doppelganger" && p.alive
+        );
+        if (targetRole === "tanner") {
           setWinner("THIRD");
-          return
-        };
+          return;
+        }
 
-        const updatedPlayers = players.map((p) =>
+        let updatedPlayers = [...players];
+
+        if (doppelganger && playerId === doppelgangerState && targetRole) {
+          updatedPlayers = updatedPlayers.map((p) =>
+            p.id === doppelganger.id ? { ...p, roleId: targetRole } : p
+          );
+        }
+
+        updatedPlayers = updatedPlayers.map((p) =>
           p.id === playerId ? { ...p, alive: false } : p
         );
 
@@ -46,6 +63,7 @@ export default function Day({ checkWinCondition, hasVoted, setHasVoted }: DayPro
           return;
         }
 
+        setTurn(turn + 1);
         setHasVoted(true);
       },
     });
