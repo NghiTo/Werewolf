@@ -25,6 +25,8 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
         return "Choose target to see";
       case "hunter":
         return "Choose target to kill";
+      case "spellcaster": 
+        return "Choose target to be silented";
     }
   };
 
