@@ -5,8 +5,9 @@ import { useState } from "react";
 import Night from "./Night";
 import Day from "./Day";
 import ResultModal from "./ResultModal";
-import type { NightAction, Player } from "@/utils/interfaces";
+import type { NightAction, Player } from "@/types/interfaces";
 import { FastForwardOutlined } from "@ant-design/icons";
+import useProcessGameData from "@/hooks/use-process-game-data";
 
 const { Title } = Typography;
 
@@ -20,7 +21,7 @@ export default function Game() {
     setWitchState,
     turn,
     setTurn,
-    setDoppelgangerState,
+    witchState,
   } = useGameDataStore();
   const [hasVoted, setHasVoted] = useState(false);
   const [nightActions, setNightActions] = useState<NightAction>({});
@@ -48,76 +49,88 @@ export default function Game() {
     return null;
   };
 
-  const handleStartDay = () => {
-    if (phase === "NIGHT") {
-      const wolfTarget = nightActions.werewolf;
-      const guardTarget = nightActions.bodyguard;
-      const witchTarget = nightActions.witch;
-      const hunterTarget = nightActions.hunter;
-      const doppelgangerTarget = nightActions.doppelganger;
+  const { startDay, startNight } = useProcessGameData(
+    players,
+    nightActions,
+    setPlayers,
+    checkWinCondition,
+    setPhase,
+    setWinner,
+    setWitchState,
+    setNightActions,
+    witchState
+  );
 
-      if (!wolfTarget) return;
+  // const handleStartDay = () => {
+  //   if (phase === "NIGHT") {
+  //     const wolfTarget = nightActions.werewolf;
+  //     const guardTarget = nightActions.bodyguard;
+  //     const witchTarget = nightActions.witch;
+  //     const hunterTarget = nightActions.hunter;
+  //     const doppelgangerTarget = nightActions.doppelganger;
 
-      let updatedPlayers = [...players];
-      const deadIds = new Set<number>();
+  //     if (!wolfTarget) return;
 
-      if (wolfTarget !== guardTarget && !witchTarget?.save) {
-        deadIds.add(wolfTarget);
-      }
+  //     let updatedPlayers = [...players];
+  //     const deadIds = new Set<number>();
 
-      if (witchTarget?.kill !== undefined) {
-        deadIds.add(witchTarget.kill);
-      }
+  //     if (wolfTarget !== guardTarget && !witchTarget?.save) {
+  //       deadIds.add(wolfTarget);
+  //     }
 
-      const hunter = players.find((p) => p.roleId === "hunter" && p.alive);
-      const doppelganger = players.find(
-        (p) => p.roleId === "doppelganger" && p.alive
-      );
-      const doppelgangerNewRole = players.find(
-        (p) => p.id === doppelgangerTarget
-      )?.roleId;
+  //     if (witchTarget?.kill !== undefined) {
+  //       deadIds.add(witchTarget.kill);
+  //     }
 
-      const hunterDies = hunter && deadIds.has(hunter.id);
+  //     const hunter = players.find((p) => p.roleId === "hunter" && p.alive);
+  //     const doppelganger = players.find(
+  //       (p) => p.roleId === "doppelganger" && p.alive
+  //     );
+  //     const doppelgangerNewRole = players.find(
+  //       (p) => p.id === doppelgangerTarget
+  //     )?.roleId;
 
-      if (hunterDies && hunterTarget !== undefined) {
-        deadIds.add(hunterTarget);
-      }
+  //     const hunterDies = hunter && deadIds.has(hunter.id);
 
-      if (
-        doppelganger &&
-        doppelgangerTarget &&
-        deadIds.has(doppelgangerTarget) &&
-        doppelgangerNewRole
-      ) {
-        updatedPlayers = updatedPlayers.map((p) =>
-          p.id === doppelganger.id ? { ...p, roleId: doppelgangerNewRole } : p
-        );
-      }
+  //     if (hunterDies && hunterTarget !== undefined) {
+  //       deadIds.add(hunterTarget);
+  //     }
 
-      updatedPlayers = updatedPlayers.map((p) =>
-        deadIds.has(p.id) ? { ...p, alive: false } : p
-      );
+  //     if (
+  //       doppelganger &&
+  //       doppelgangerTarget &&
+  //       deadIds.has(doppelgangerTarget) &&
+  //       doppelgangerNewRole
+  //     ) {
+  //       updatedPlayers = updatedPlayers.map((p) =>
+  //         p.id === doppelganger.id ? { ...p, roleId: doppelgangerNewRole } : p
+  //       );
+  //     }
 
-      setDoppelgangerState(doppelgangerTarget ?? null);
-      setWitchState({
-        usedSave: !!witchTarget?.save,
-        usedKill: witchTarget?.kill !== undefined,
-      });
-      setPlayers(updatedPlayers);
-      setNightActions({});
-      setHasVoted(false);
+  //     updatedPlayers = updatedPlayers.map((p) =>
+  //       deadIds.has(p.id) ? { ...p, alive: false } : p
+  //     );
 
-      const result = checkWinCondition(updatedPlayers);
-      if (result) {
-        setWinner(result);
-        return;
-      }
+  //     setDoppelgangerState(doppelgangerTarget ?? null);
+  //     setWitchState({
+  //       usedSave: !!witchTarget?.save,
+  //       usedKill: witchTarget?.kill !== undefined,
+  //     });
+  //     setPlayers(updatedPlayers);
+  //     setNightActions({});
+  //     setHasVoted(false);
 
-      setPhase("DAY");
-    } else {
-      setPhase("NIGHT");
-    }
-  };
+  //     const result = checkWinCondition(updatedPlayers);
+  //     if (result) {
+  //       setWinner(result);
+  //       return;
+  //     }
+
+  //     setPhase("DAY");
+  //   } else {
+  //     setPhase("NIGHT");
+  //   }
+  // };
 
   const handleSkipVote = () => {
     Modal.confirm({
@@ -146,8 +159,9 @@ export default function Game() {
     const seerAlive = aliveRoles.includes("seer");
     const hunterAlive = aliveRoles.includes("hunter");
     const spellcaster = aliveRoles.includes("spellcaster");
+    const doppelganger = aliveRoles.includes("doppelganger");
 
-    if (nightActions.doppelganger === undefined && turn === 1) {
+    if (doppelganger && doppelganger === undefined && turn === 1) {
       return true;
     }
 
@@ -219,7 +233,7 @@ export default function Game() {
           size="large"
           className="mt-4"
           disabled={checkEnabled()}
-          onClick={handleStartDay}
+          onClick={phase === "NIGHT" ? startDay : startNight}
         >
           Start {phase === "NIGHT" ? "Day" : "Night"}
         </Button>

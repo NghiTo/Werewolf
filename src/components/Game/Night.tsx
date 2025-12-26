@@ -1,8 +1,9 @@
 import { ROLES } from "@/database/role";
 import { useGameDataStore } from "@/store/dataStore";
-import type { NightAction, Player } from "@/utils/interfaces";
-import { Card, Checkbox, Image, Select, Typography } from "antd";
+import type { NightAction, Player } from "@/types/interfaces";
+import { Card, Image, Select, Typography } from "antd";
 import { useEffect } from "react";
+import Witch from "./Witch";
 
 const { Title, Text } = Typography;
 
@@ -13,7 +14,7 @@ interface NightProps {
 }
 
 const Night = ({ role, nightActions, setNightActions }: NightProps) => {
-  const { players, witchState, setWinner, turn } = useGameDataStore();
+  const { players, setWinner, turn } = useGameDataStore();
 
   const checkAction = (roleId: string) => {
     switch (roleId) {
@@ -25,7 +26,7 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
         return "Choose target to see";
       case "hunter":
         return "Choose target to kill";
-      case "spellcaster": 
+      case "spellcaster":
         return "Choose target to be silented";
       case "doppelganger":
         return "Choose target to copy";
@@ -61,17 +62,49 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
     }
   };
 
+  const renderOptions = (roleId: string) => {
+    switch (roleId) {
+      case "witch":
+        return (
+          <Witch
+            getOptionsByRole={getOptionsByRole}
+            nightActions={nightActions}
+            role={role}
+            setNightActions={setNightActions}
+          />
+        );
+      default:
+        return (
+          <>
+            <Title level={5}>{checkAction(role.roleId)}</Title>
+            <Select
+              disabled={disableSelect()}
+              style={{ width: "100%" }}
+              placeholder="Select a player"
+              onChange={(value) =>
+                setNightActions((prev) => ({
+                  ...prev,
+                  [role.roleId]: value,
+                }))
+              }
+              options={getOptionsByRole(role.roleId)}
+            />
+          </>
+        );
+    }
+  };
+
   const disableSelect = () => {
     if (!role.alive) return true;
-    if (role.roleId === "doppelganger" && turn > 1) return true
-    return false
-  }
+    if (role.roleId === "doppelganger" && turn > 1) return true;
+    return false;
+  };
 
   useEffect(() => {
     const alivePlayers = players.filter((p) => p.alive);
     const aliveWolves = alivePlayers.filter((p) => p.roleId === "werewolf");
     if (aliveWolves.length === alivePlayers.length - aliveWolves.length - 1) {
-      setWinner("WOLF")
+      setWinner("WOLF");
     }
   }, []);
 
@@ -90,61 +123,7 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
         <Text strong>{role.name}</Text>
       </div>
 
-      <div style={{ flex: 1 }}>
-        {role.roleId === "witch" ? (
-          <div className="flex flex-col gap-2">
-            <Checkbox
-              disabled={!role.alive || witchState.usedSave}
-              checked={nightActions.witch?.save}
-              onChange={(e) =>
-                setNightActions((prev) => ({
-                  ...prev,
-                  witch: {
-                    ...prev.witch,
-                    save: e.target.checked,
-                  },
-                }))
-              }
-            >
-              Use rescue potion
-            </Checkbox>
-
-            <Select
-              allowClear
-              disabled={!role.alive || witchState.usedKill}
-              placeholder="Choose someone to poison"
-              style={{ width: "100%" }}
-              value={nightActions.witch?.kill}
-              onChange={(value) =>
-                setNightActions((prev) => ({
-                  ...prev,
-                  witch: {
-                    ...prev.witch,
-                    kill: value,
-                  },
-                }))
-              }
-              options={getOptionsByRole(role.roleId)}
-            />
-          </div>
-        ) : (
-          <>
-            <Title level={5}>{checkAction(role.roleId)}</Title>
-            <Select
-              disabled={disableSelect()}
-              style={{ width: "100%" }}
-              placeholder="Select a player"
-              onChange={(value) =>
-                setNightActions((prev) => ({
-                  ...prev,
-                  [role.roleId]: value,
-                }))
-              }
-              options={getOptionsByRole(role.roleId)}
-            />
-          </>
-        )}
-      </div>
+      <div style={{ flex: 1 }}>{renderOptions(role.roleId)}</div>
     </Card>
   );
 };

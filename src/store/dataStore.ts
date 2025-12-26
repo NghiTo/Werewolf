@@ -1,4 +1,4 @@
-import type { Player } from "@/utils/interfaces";
+import type { Player } from "@/types/interfaces";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -65,6 +65,7 @@ export const useGameDataStore = create<GameDataState>()(
         phase: state.phase,
         winner: state.winner,
         turn: state.turn,
+        witchState: state.witchState,
       }),
     }
   )
