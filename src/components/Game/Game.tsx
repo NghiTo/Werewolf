@@ -22,6 +22,7 @@ export default function Game() {
     turn,
     setTurn,
     witchState,
+    setHunterState
   } = useGameDataStore();
   const [hasVoted, setHasVoted] = useState(false);
   const [nightActions, setNightActions] = useState<NightAction>({});
@@ -58,79 +59,9 @@ export default function Game() {
     setWinner,
     setWitchState,
     setNightActions,
-    witchState
+    witchState,
+    setHunterState
   );
-
-  // const handleStartDay = () => {
-  //   if (phase === "NIGHT") {
-  //     const wolfTarget = nightActions.werewolf;
-  //     const guardTarget = nightActions.bodyguard;
-  //     const witchTarget = nightActions.witch;
-  //     const hunterTarget = nightActions.hunter;
-  //     const doppelgangerTarget = nightActions.doppelganger;
-
-  //     if (!wolfTarget) return;
-
-  //     let updatedPlayers = [...players];
-  //     const deadIds = new Set<number>();
-
-  //     if (wolfTarget !== guardTarget && !witchTarget?.save) {
-  //       deadIds.add(wolfTarget);
-  //     }
-
-  //     if (witchTarget?.kill !== undefined) {
-  //       deadIds.add(witchTarget.kill);
-  //     }
-
-  //     const hunter = players.find((p) => p.roleId === "hunter" && p.alive);
-  //     const doppelganger = players.find(
-  //       (p) => p.roleId === "doppelganger" && p.alive
-  //     );
-  //     const doppelgangerNewRole = players.find(
-  //       (p) => p.id === doppelgangerTarget
-  //     )?.roleId;
-
-  //     const hunterDies = hunter && deadIds.has(hunter.id);
-
-  //     if (hunterDies && hunterTarget !== undefined) {
-  //       deadIds.add(hunterTarget);
-  //     }
-
-  //     if (
-  //       doppelganger &&
-  //       doppelgangerTarget &&
-  //       deadIds.has(doppelgangerTarget) &&
-  //       doppelgangerNewRole
-  //     ) {
-  //       updatedPlayers = updatedPlayers.map((p) =>
-  //         p.id === doppelganger.id ? { ...p, roleId: doppelgangerNewRole } : p
-  //       );
-  //     }
-
-  //     updatedPlayers = updatedPlayers.map((p) =>
-  //       deadIds.has(p.id) ? { ...p, alive: false } : p
-  //     );
-
-  //     setDoppelgangerState(doppelgangerTarget ?? null);
-  //     setWitchState({
-  //       usedSave: !!witchTarget?.save,
-  //       usedKill: witchTarget?.kill !== undefined,
-  //     });
-  //     setPlayers(updatedPlayers);
-  //     setNightActions({});
-  //     setHasVoted(false);
-
-  //     const result = checkWinCondition(updatedPlayers);
-  //     if (result) {
-  //       setWinner(result);
-  //       return;
-  //     }
-
-  //     setPhase("DAY");
-  //   } else {
-  //     setPhase("NIGHT");
-  //   }
-  // };
 
   const handleSkipVote = () => {
     Modal.confirm({

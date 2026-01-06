@@ -9,12 +9,14 @@ interface GameDataState {
   turn: number;
   witchState: { usedSave: boolean; usedKill: boolean };
   doppelgangerState: number | null;
+  hunterState: number | null;
 
   setPlayers: (players: Player[]) => void;
   setWinner: (winners: string | null) => void;
   setPhase: (phase: string) => void;
   setTurn: (turn: number) => void;
   setDoppelgangerState: (doppelgangerState: number | null) => void;
+  setHunterState: (hunterState: number | null) => void;
   setWitchState: (witchState: { usedSave: boolean; usedKill: boolean }) => void;
   resetGameData: () => void;
 }
@@ -25,6 +27,7 @@ const initialState = {
   winner: null,
   turn: 1,
   doppelgangerState: null,
+  hunterState: null,
   witchState: {
     usedSave: false,
     usedKill: false,
@@ -49,6 +52,8 @@ export const useGameDataStore = create<GameDataState>()(
 
       setDoppelgangerState: (doppelgangerState) => set({ doppelgangerState }),
 
+      setHunterState: (hunterState) => set({ hunterState }),
+
       setWitchState: (witchState) => set({ witchState }),
 
       resetGameData: () => {
@@ -65,6 +70,8 @@ export const useGameDataStore = create<GameDataState>()(
         phase: state.phase,
         winner: state.winner,
         turn: state.turn,
+        hunterState: state.hunterState,
+        doppelgangerState: state.doppelgangerState,
         witchState: state.witchState,
       }),
     }

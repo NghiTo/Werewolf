@@ -16,8 +16,15 @@ export default function Day({
   hasVoted,
   setHasVoted,
 }: DayProps) {
-  const { players, setPlayers, setWinner, setTurn, turn, doppelgangerState } =
-    useGameDataStore();
+  const {
+    players,
+    setPlayers,
+    setWinner,
+    setTurn,
+    turn,
+    doppelgangerState,
+    hunterState,
+  } = useGameDataStore();
 
   const alivePlayers = players.filter((p) => p.alive);
   const deadPlayers = players.filter((p) => !p.alive);
@@ -38,12 +45,19 @@ export default function Day({
         const doppelganger = players.find(
           (p) => p.roleId === "doppelganger" && p.alive
         );
+        const hunter = players.find((p) => p.roleId === "hunter" && p.alive);
         if (targetRole === "tanner") {
           setWinner("THIRD");
           return;
         }
 
         let updatedPlayers = [...players];
+
+        if (hunter && playerId === hunter.id) {
+          updatedPlayers = updatedPlayers.map((p) =>
+            p.id === hunterState ? { ...p, alive: false } : p
+          );
+        }
 
         if (doppelganger && playerId === doppelgangerState && targetRole) {
           updatedPlayers = updatedPlayers.map((p) =>
