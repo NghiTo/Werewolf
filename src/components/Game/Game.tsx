@@ -22,18 +22,40 @@ export default function Game() {
     turn,
     setTurn,
     witchState,
-    setHunterState
+    setHunterState,
   } = useGameDataStore();
   const [hasVoted, setHasVoted] = useState(false);
   const [nightActions, setNightActions] = useState<NightAction>({});
 
   const roleOrderMap = Object.fromEntries(
-    ROLE_ORDER.map((roleId, index) => [roleId, index])
+    ROLE_ORDER.map((roleId, index) => [roleId, index]),
   );
 
-  const calledPlayers = players
-    .filter((p) => ROLE_ORDER.includes(p.roleId))
-    .sort((a, b) => roleOrderMap[a.roleId] - roleOrderMap[b.roleId]);
+  const getRoleCardName = (roleId: string, count: number) => {
+    if (roleId === "werewolf" && count > 1) {
+      return "Werewolves";
+    }
+
+    return players.find((p) => p.roleId === roleId)?.name ?? roleId;
+  };
+
+  const calledPlayers = Array.from(
+    new Map(
+      players
+        .filter((p) => ROLE_ORDER.includes(p.roleId))
+        .sort((a, b) => roleOrderMap[a.roleId] - roleOrderMap[b.roleId])
+        .map((player) => {
+          const roleCount = players.filter((p) => p.roleId === player.roleId).length;
+          return [
+            player.roleId,
+            {
+              ...player,
+              name: getRoleCardName(player.roleId, roleCount),
+            },
+          ];
+        }),
+    ).values(),
+  );
 
   const checkWinCondition = (players: Player[]) => {
     const alivePlayers = players.filter((p) => p.alive);
@@ -60,7 +82,7 @@ export default function Game() {
     setWitchState,
     setNightActions,
     witchState,
-    setHunterState
+    setHunterState,
   );
 
   const handleSkipVote = () => {
@@ -142,7 +164,7 @@ export default function Game() {
             calledPlayers.map((role) => {
               return (
                 <Night
-                  key={role.id}
+                  key={role.roleId}
                   role={role}
                   nightActions={nightActions}
                   setNightActions={setNightActions}
