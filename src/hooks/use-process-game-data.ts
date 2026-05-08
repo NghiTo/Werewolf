@@ -4,6 +4,7 @@ import {
   resolveHunter,
   resolveWitch,
   resolveWolfKill,
+  resolveDoppelganger,
 } from "@/utils/resolveGameData";
 
 const useProcessGameData = (
@@ -27,6 +28,7 @@ const useProcessGameData = (
     resolveHunter(players, nightActions, deadIds);
 
     updatedPlayers = resolveDeaths(updatedPlayers, deadIds);
+    updatedPlayers = resolveDoppelganger(updatedPlayers, nightActions, deadIds);
 
     setWitchState({
       usedSave: witchState.usedSave || !!nightActions.witch?.save,

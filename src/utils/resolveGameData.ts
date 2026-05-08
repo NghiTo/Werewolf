@@ -42,3 +42,28 @@ export const resolveHunter = (
 
   deadIds.add(targetId);
 };
+
+export const resolveDoppelganger = (
+  players: Player[],
+  nightActions: NightAction,
+  deadIds: Set<number>
+) => {
+  const doppelganger = players.find((p) => p.roleId === "doppelganger" && p.alive);
+
+  if (!doppelganger) return players;
+
+  const targetId = nightActions.doppelganger;
+
+  if (targetId === undefined) return players;
+
+  if (deadIds.has(targetId)) {
+    const target = players.find((p) => p.id === targetId);
+    if (target) {
+      return players.map((p) =>
+        p.id === doppelganger.id ? { ...p, roleId: target.roleId } : p
+      );
+    }
+  }
+
+  return players;
+};
