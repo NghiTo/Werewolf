@@ -67,3 +67,21 @@ export const resolveDoppelganger = (
 
   return players;
 };
+
+export const resolveCursed = (
+  players: Player[],
+  deadIds: Set<number>
+) => {
+  const cursed = players.find((p) => p.roleId === "cursed" && p.alive);
+
+  if (!cursed) return players;
+
+  if (deadIds.has(cursed.id)) {
+    deadIds.delete(cursed.id);
+    return players.map((p) =>
+      p.id === cursed.id ? { ...p, roleId: "werewolf" } : p
+    );
+  }
+
+  return players;
+};

@@ -5,6 +5,7 @@ import {
   resolveWitch,
   resolveWolfKill,
   resolveDoppelganger,
+  resolveCursed,
 } from "@/utils/resolveGameData";
 
 const useProcessGameData = (
@@ -17,7 +18,7 @@ const useProcessGameData = (
   setWitchState: (witchState: { usedSave: boolean; usedKill: boolean }) => void,
   setNightActions: (nightActions: NightAction) => void,
   witchState: { usedSave: boolean; usedKill: boolean },
-  setHunterState: (hunterState: number | null) => void
+  setHunterState: (hunterState: number | null) => void,
 ) => {
   const startDay = () => {
     let updatedPlayers = [...players];
@@ -26,7 +27,8 @@ const useProcessGameData = (
     resolveWolfKill(nightActions, deadIds);
     resolveWitch(nightActions, deadIds);
     resolveHunter(players, nightActions, deadIds);
-
+    
+    updatedPlayers = resolveCursed(updatedPlayers, deadIds);
     updatedPlayers = resolveDeaths(updatedPlayers, deadIds);
     updatedPlayers = resolveDoppelganger(updatedPlayers, nightActions, deadIds);
 

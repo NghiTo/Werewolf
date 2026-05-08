@@ -4,6 +4,7 @@ import type { NightAction, Player } from "@/types/interfaces";
 import { Card, Image, Select, Typography } from "antd";
 import { useEffect } from "react";
 import Witch from "./Witch";
+import Cursed from "./Cursed";
 
 const { Title, Text } = Typography;
 
@@ -39,7 +40,7 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
         return players
           .filter(
             (p) =>
-              p.alive && ROLES.find((r) => r.id === p.roleId)?.side !== "wolf"
+              p.alive && ROLES.find((r) => r.id === p.roleId)?.side !== "wolf",
           )
           .map((p) => ({
             label: `${p.name} (${p.roleId})`,
@@ -73,6 +74,8 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
             setNightActions={setNightActions}
           />
         );
+      case "cursed":
+        return <Cursed nightActions={nightActions} role={role} />;
       default:
         return (
           <>

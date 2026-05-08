@@ -65,7 +65,7 @@ export const ROLES = [
     id: "cursed",
     name: "Cursed",
     image: "/src/assets/cursed.webp",
-    side: "wolf",
+    side: "village",
   },
   {
     id: "dire-wolf",
@@ -103,5 +103,6 @@ export const ROLE_ORDER = [
   "hunter",
   "spellcaster",
   "doppelganger",
+  "cursed",
   "cult-leader",
 ];
