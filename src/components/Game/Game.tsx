@@ -23,6 +23,8 @@ export default function Game() {
     setTurn,
     witchState,
     setHunterState,
+    setDoppelgangerState,
+    doppelgangerState,
   } = useGameDataStore();
   const [hasVoted, setHasVoted] = useState(false);
   const [nightActions, setNightActions] = useState<NightAction>({});
@@ -83,6 +85,8 @@ export default function Game() {
     setNightActions,
     witchState,
     setHunterState,
+    setDoppelgangerState,
+    doppelgangerState,
   );
 
   const handleSkipVote = () => {

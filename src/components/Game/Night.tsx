@@ -15,7 +15,7 @@ interface NightProps {
 }
 
 const Night = ({ role, nightActions, setNightActions }: NightProps) => {
-  const { players, setWinner, turn } = useGameDataStore();
+  const { players, setWinner, turn, doppelgangerState } = useGameDataStore();
 
   const checkAction = (roleId: string) => {
     switch (roleId) {
@@ -63,6 +63,12 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
     }
   };
 
+  const getValueByRole = (roleId: string) => {
+    if (roleId === "doppelganger" && turn > 1) {
+      return doppelgangerState ?? undefined;
+    }
+  };
+
   const renderOptions = (roleId: string) => {
     switch (roleId) {
       case "witch":
@@ -84,6 +90,7 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
               disabled={disableSelect()}
               style={{ width: "100%" }}
               placeholder="Select a player"
+              value={getValueByRole(role.roleId)}
               onChange={(value) =>
                 setNightActions((prev) => ({
                   ...prev,

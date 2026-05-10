@@ -5,7 +5,7 @@ export const resolveDeaths = (players: Player[], deadIds: Set<number>) =>
 
 export const resolveWolfKill = (
   nightActions: NightAction,
-  deadIds: Set<number>
+  deadIds: Set<number>,
 ) => {
   const { werewolf, bodyguard, witch } = nightActions;
 
@@ -16,7 +16,7 @@ export const resolveWolfKill = (
 
 export const resolveWitch = (
   nightActions: NightAction,
-  deadIds: Set<number>
+  deadIds: Set<number>,
 ) => {
   if (nightActions.witch?.kill !== undefined) {
     deadIds.add(nightActions.witch.kill);
@@ -26,7 +26,7 @@ export const resolveWitch = (
 export const resolveHunter = (
   players: Player[],
   nightActions: NightAction,
-  deadIds: Set<number>
+  deadIds: Set<number>,
 ) => {
   const hunter = players.find((p) => p.roleId === "hunter" && p.alive);
 
@@ -46,21 +46,24 @@ export const resolveHunter = (
 export const resolveDoppelganger = (
   players: Player[],
   nightActions: NightAction,
-  deadIds: Set<number>
+  deadIds: Set<number>,
+  doppelgangerState: number | null,
 ) => {
-  const doppelganger = players.find((p) => p.roleId === "doppelganger" && p.alive);
+  const doppelganger = players.find(
+    (p) => p.roleId === "doppelganger" && p.alive,
+  );
 
   if (!doppelganger) return players;
 
-  const targetId = nightActions.doppelganger;
+  const targetId = nightActions.doppelganger || doppelgangerState;
 
-  if (targetId === undefined) return players;
+  if (targetId === undefined || targetId === null) return players;
 
   if (deadIds.has(targetId)) {
     const target = players.find((p) => p.id === targetId);
     if (target) {
       return players.map((p) =>
-        p.id === doppelganger.id ? { ...p, roleId: target.roleId } : p
+        p.id === doppelganger.id ? { ...p, roleId: target.roleId } : p,
       );
     }
   }
@@ -68,10 +71,7 @@ export const resolveDoppelganger = (
   return players;
 };
 
-export const resolveCursed = (
-  players: Player[],
-  deadIds: Set<number>
-) => {
+export const resolveCursed = (players: Player[], deadIds: Set<number>) => {
   const cursed = players.find((p) => p.roleId === "cursed" && p.alive);
 
   if (!cursed) return players;
@@ -79,7 +79,7 @@ export const resolveCursed = (
   if (deadIds.has(cursed.id)) {
     deadIds.delete(cursed.id);
     return players.map((p) =>
-      p.id === cursed.id ? { ...p, roleId: "werewolf" } : p
+      p.id === cursed.id ? { ...p, roleId: "werewolf" } : p,
     );
   }
 
