@@ -9,6 +9,7 @@ interface Role {
   id: string;
   name: string;
   image: string;
+  side: string;
   multi?: boolean;
 }
 
@@ -24,7 +25,7 @@ export default function RoleSelection() {
   const totalSelected = Object.values(selectedRoles).reduce((a, b) => a + b, 0);
   const visibleRoles = ROLES.filter((r) => r.side === activeTab);
 
-  const getMaxWerewolf = (players: number) => {
+  const getMaxWolfSide = (players: number) => {
     if (players <= 7) return 1;
     if (players <= 9) return 2;
     if (players <= 13) return 3;
@@ -34,15 +35,23 @@ export default function RoleSelection() {
 
   const increaseRole = (role: Role) => {
     setSelectedRoles((prev) => {
-      if (totalSelected >= playerCount) return prev;
+      const totalSelectedInPrev = Object.values(prev).reduce((a, b) => a + b, 0);
+      if (totalSelectedInPrev >= playerCount) return prev;
 
       const current = prev[role.id] ?? 0;
 
       if (!role.multi && current >= 1) return prev;
 
-      if (role.id === "werewolf") {
-        const maxWolf = getMaxWerewolf(playerCount);
-        if (current >= maxWolf) return prev;
+      if (role.side === "wolf") {
+        const currentWolfCount = Object.entries(prev).reduce(
+          (sum, [roleId, count]) => {
+            const selectedRole = ROLES.find((r) => r.id === roleId);
+            return selectedRole?.side === "wolf" ? sum + count : sum;
+          },
+          0
+        );
+        const maxWolfSide = getMaxWolfSide(playerCount);
+        if (currentWolfCount >= maxWolfSide) return prev;
       }
 
       return { ...prev, [role.id]: current + 1 };
