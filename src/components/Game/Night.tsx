@@ -29,6 +29,8 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
         return "Choose target to kill";
       case "spellcaster":
         return "Choose target to be silented";
+      case "cupid":
+        return "Choose two players to fall in love";
       case "doppelganger":
         return "Choose target to copy";
     }
@@ -47,6 +49,7 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
             value: p.id,
           }));
       case "bodyguard":
+      case "cupid":
         return players
           .filter((p) => p.alive)
           .map((p) => ({
@@ -67,6 +70,12 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
     if (roleId === "doppelganger" && turn > 1) {
       return doppelgangerState ?? undefined;
     }
+
+    if (roleId === "cupid") {
+      return nightActions.cupid;
+    }
+
+    return undefined;
   };
 
   const renderOptions = (roleId: string) => {
@@ -82,6 +91,29 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
         );
       case "cursed":
         return <Cursed nightActions={nightActions} role={role} />;
+      case "cupid":
+        return (
+          <>
+            <Title level={5}>{checkAction(role.roleId)}</Title>
+            <Select
+              disabled={disableSelect()}
+              mode="multiple"
+              style={{ width: "100%" }}
+              placeholder="Select two players"
+              value={getValueByRole(role.roleId)}
+              onChange={(value) => {
+                const selected = Array.isArray(value)
+                  ? Array.from(new Set(value)).slice(0, 2)
+                  : [];
+                setNightActions((prev) => ({
+                  ...prev,
+                  cupid: selected,
+                }));
+              }}
+              options={getOptionsByRole(role.roleId)}
+            />
+          </>
+        );
       default:
         return (
           <>

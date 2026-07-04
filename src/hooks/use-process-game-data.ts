@@ -6,6 +6,7 @@ import {
   resolveWolfKill,
   resolveDoppelganger,
   resolveCursed,
+  resolveCupid,
 } from "@/utils/resolveGameData";
 
 const useProcessGameData = (
@@ -21,15 +22,21 @@ const useProcessGameData = (
   setHunterState: (hunterState: number | null) => void,
   setDoppelgangerState: (doppelgangerState: number | null) => void,
   doppelgangerState: number | null,
+  setCupidPair: (cupidPair: number[] | null) => void,
+  cupidPair: number[] | null,
 ) => {
   const startDay = () => {
     let updatedPlayers = [...players];
     const deadIds = new Set<number>();
 
+    const currentCupidPair =
+      nightActions.cupid?.length === 2 ? nightActions.cupid : cupidPair;
+
     resolveWolfKill(nightActions, deadIds);
     resolveWitch(nightActions, deadIds);
     resolveHunter(players, nightActions, deadIds);
-    
+    resolveCupid(deadIds, currentCupidPair);
+
     updatedPlayers = resolveCursed(updatedPlayers, deadIds);
     updatedPlayers = resolveDeaths(updatedPlayers, deadIds);
     updatedPlayers = resolveDoppelganger(updatedPlayers, nightActions, deadIds, doppelgangerState);
@@ -40,6 +47,15 @@ const useProcessGameData = (
     });
     setHunterState(nightActions.hunter ?? null);
     setDoppelgangerState(nightActions.doppelganger ?? null);
+
+    if (nightActions.cupid?.length === 2) {
+      setCupidPair(nightActions.cupid);
+    }
+
+    if (cupidPair?.length === 2 && (deadIds.has(cupidPair[0]) || deadIds.has(cupidPair[1]))) {
+      setCupidPair(null);
+    }
+
     setPlayers(updatedPlayers);
     setNightActions({});
 

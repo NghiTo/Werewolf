@@ -24,6 +24,8 @@ export default function Game() {
     witchState,
     setHunterState,
     setDoppelgangerState,
+    setCupidPair,
+    cupidPair,
     doppelgangerState,
   } = useGameDataStore();
   const [hasVoted, setHasVoted] = useState(false);
@@ -87,6 +89,8 @@ export default function Game() {
     setHunterState,
     setDoppelgangerState,
     doppelgangerState,
+    setCupidPair,
+    cupidPair,
   );
 
   const handleSkipVote = () => {
@@ -139,6 +143,11 @@ export default function Game() {
     }
 
     if (hunterAlive && nightActions.hunter === undefined) {
+      return true;
+    }
+
+    const cupidAlive = aliveRoles.includes("cupid");
+    if (cupidAlive && (!nightActions.cupid || nightActions.cupid.length !== 2)) {
       return true;
     }
 

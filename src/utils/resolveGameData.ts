@@ -43,6 +43,23 @@ export const resolveHunter = (
   deadIds.add(targetId);
 };
 
+export const resolveCupid = (
+  deadIds: Set<number>,
+  cupidPair: number[] | null,
+) => {
+  if (!cupidPair || cupidPair.length !== 2) return;
+
+  const [first, second] = cupidPair;
+
+  if (deadIds.has(first)) {
+    deadIds.add(second);
+  }
+
+  if (deadIds.has(second)) {
+    deadIds.add(first);
+  }
+};
+
 export const resolveDoppelganger = (
   players: Player[],
   nightActions: NightAction,

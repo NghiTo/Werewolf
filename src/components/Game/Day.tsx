@@ -24,6 +24,8 @@ export default function Day({
     turn,
     doppelgangerState,
     hunterState,
+    cupidPair,
+    setCupidPair,
   } = useGameDataStore();
 
   const alivePlayers = players.filter((p) => p.alive);
@@ -68,6 +70,13 @@ export default function Day({
         updatedPlayers = updatedPlayers.map((p) =>
           p.id === playerId ? { ...p, alive: false } : p
         );
+
+        if (cupidPair?.length === 2 && cupidPair.includes(playerId)) {
+          updatedPlayers = updatedPlayers.map((p) =>
+            cupidPair.includes(p.id) ? { ...p, alive: false } : p
+          );
+          setCupidPair(null);
+        }
 
         setPlayers(updatedPlayers);
 

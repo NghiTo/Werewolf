@@ -11,6 +11,7 @@ export interface NightAction {
   seer?: number;
   hunter?: number;
   spellcaster?: number;
+  cupid?: number[];
   doppelganger?: number;
   hunterState?: number;
   witch?: {
