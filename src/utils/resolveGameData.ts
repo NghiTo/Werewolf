@@ -60,6 +60,28 @@ export const resolveCupid = (
   }
 };
 
+export const resolveCultLeader = (
+  players: Player[],
+  nightActions: NightAction,
+  cultMembers: number[],
+) => {
+  const leader = players.find((p) => p.roleId === "cult-leader" && p.alive);
+  if (!leader) return cultMembers;
+
+  const newMembers = new Set(cultMembers ?? []);
+  newMembers.add(leader.id);
+
+  const targetId = nightActions["cult-leader"];
+  if (targetId !== undefined) {
+    const target = players.find((p) => p.id === targetId && p.alive);
+    if (target) {
+      newMembers.add(targetId);
+    }
+  }
+
+  return Array.from(newMembers);
+};
+
 export const resolveDoppelganger = (
   players: Player[],
   nightActions: NightAction,

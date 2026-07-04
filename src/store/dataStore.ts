@@ -10,6 +10,7 @@ interface GameDataState {
   witchState: { usedSave: boolean; usedKill: boolean };
   doppelgangerState: number | null;
   hunterState: number | null;
+  cultMembers: number[];
   cupidPair: number[] | null;
 
   setPlayers: (players: Player[]) => void;
@@ -18,6 +19,7 @@ interface GameDataState {
   setTurn: (turn: number) => void;
   setDoppelgangerState: (doppelgangerState: number | null) => void;
   setHunterState: (hunterState: number | null) => void;
+  setCultMembers: (cultMembers: number[]) => void;
   setCupidPair: (cupidPair: number[] | null) => void;
   setWitchState: (witchState: { usedSave: boolean; usedKill: boolean }) => void;
   resetGameData: () => void;
@@ -30,6 +32,7 @@ const initialState = {
   turn: 1,
   doppelgangerState: null,
   hunterState: null,
+  cultMembers: [],
   cupidPair: null,
   witchState: {
     usedSave: false,
@@ -53,13 +56,15 @@ export const useGameDataStore = create<GameDataState>()(
 
       setTurn: (turn) => set({ turn }),
 
-      setDoppelgangerState: (doppelgangerState) => set({ doppelgangerState }),
+      setDoppelgangerState: (doppelgangerState: number | null) => set({ doppelgangerState }),
 
-      setHunterState: (hunterState) => set({ hunterState }),
+      setHunterState: (hunterState: number | null) => set({ hunterState }),
 
-      setCupidPair: (cupidPair) => set({ cupidPair }),
+      setCultMembers: (cultMembers: number[]) => set({ cultMembers }),
 
-      setWitchState: (witchState) => set({ witchState }),
+      setCupidPair: (cupidPair: number[] | null) => set({ cupidPair }),
+
+      setWitchState: (witchState: { usedSave: boolean; usedKill: boolean }) => set({ witchState }),
 
       resetGameData: () => {
         set({ ...initialState });
@@ -77,6 +82,7 @@ export const useGameDataStore = create<GameDataState>()(
         turn: state.turn,
         hunterState: state.hunterState,
         doppelgangerState: state.doppelgangerState,
+        cultMembers: state.cultMembers,
         cupidPair: state.cupidPair,
         witchState: state.witchState,
       }),

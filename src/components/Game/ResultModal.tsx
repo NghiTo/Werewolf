@@ -18,6 +18,8 @@ export default function ResultModal() {
         return "🏡 Village wins!";
       case "THIRD":
         return "🎭 Third-side player wins!";
+      case "CULT":
+        return "⛪ Cult Leader wins!";
       default:
         return "";
     }
@@ -31,6 +33,8 @@ export default function ResultModal() {
         return "All werewolves have been eliminated.";
       case "THIRD":
         return "A lone survivor has achieved their secret goal.";
+      case "CULT":
+        return "The cult has converted the remaining players.";
       default:
         return "";
     }

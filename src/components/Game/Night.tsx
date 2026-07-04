@@ -31,6 +31,8 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
         return "Choose target to be silented";
       case "cupid":
         return "Choose two players to fall in love";
+      case "cult-leader":
+        return "Choose a player to recruit into the cult";
       case "doppelganger":
         return "Choose target to copy";
     }
@@ -56,6 +58,13 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
             label: `${p.name} (${p.roleId})`,
             value: p.id,
           }));
+      case "cult-leader":
+        return players
+          .filter((p) => p.alive && p.id !== role.id)
+          .map((p) => ({
+            label: `${p.name} (${p.roleId})`,
+            value: p.id,
+          }));
       default:
         return players
           .filter((p) => p.alive && p.id !== role.id)
@@ -73,6 +82,10 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
 
     if (roleId === "cupid") {
       return nightActions.cupid;
+    }
+
+    if (roleId === "cult-leader") {
+      return nightActions["cult-leader"];
     }
 
     return undefined;

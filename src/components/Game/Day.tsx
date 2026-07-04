@@ -6,7 +6,7 @@ import { ExclamationCircleOutlined } from "@ant-design/icons";
 const { Title, Text } = Typography;
 
 interface DayProps {
-  checkWinCondition: (players: any) => string | null;
+  checkWinCondition: (players: any, cultMembers?: number[]) => string | null;
   hasVoted: boolean;
   setHasVoted: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -26,6 +26,7 @@ export default function Day({
     hunterState,
     cupidPair,
     setCupidPair,
+    cultMembers,
   } = useGameDataStore();
 
   const alivePlayers = players.filter((p) => p.alive);
@@ -80,7 +81,7 @@ export default function Day({
 
         setPlayers(updatedPlayers);
 
-        const result = checkWinCondition(updatedPlayers);
+        const result = checkWinCondition(updatedPlayers, cultMembers);
         if (result) {
           setWinner(result);
           return;

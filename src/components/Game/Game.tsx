@@ -24,7 +24,9 @@ export default function Game() {
     witchState,
     setHunterState,
     setDoppelgangerState,
+    setCultMembers,
     setCupidPair,
+    cultMembers,
     cupidPair,
     doppelgangerState,
   } = useGameDataStore();
@@ -61,9 +63,16 @@ export default function Game() {
     ).values(),
   );
 
-  const checkWinCondition = (players: Player[]) => {
+  const checkWinCondition = (players: Player[], currentCultMembers?: number[]) => {
     const alivePlayers = players.filter((p) => p.alive);
     const aliveWolves = alivePlayers.filter((p) => p.roleId === "werewolf");
+    const aliveCultLeader = alivePlayers.some((p) => p.roleId === "cult-leader");
+    const cultMembersToCheck = currentCultMembers ?? cultMembers;
+    const aliveCultMembers = alivePlayers.filter((p) => cultMembersToCheck.includes(p.id));
+
+    if (aliveCultLeader && aliveCultMembers.length * 2 >= alivePlayers.length && alivePlayers.length > 0) {
+      return "CULT";
+    }
 
     if (aliveWolves.length === 0) {
       return "VILLAGE";
@@ -89,6 +98,8 @@ export default function Game() {
     setHunterState,
     setDoppelgangerState,
     doppelgangerState,
+    setCultMembers,
+    cultMembers,
     setCupidPair,
     cupidPair,
   );
@@ -148,6 +159,11 @@ export default function Game() {
 
     const cupidAlive = aliveRoles.includes("cupid");
     if (cupidAlive && (!nightActions.cupid || nightActions.cupid.length !== 2)) {
+      return true;
+    }
+
+    const cultLeaderAlive = aliveRoles.includes("cult-leader");
+    if (cultLeaderAlive && nightActions["cult-leader"] === undefined) {
       return true;
     }
 

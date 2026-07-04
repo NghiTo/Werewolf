@@ -7,13 +7,14 @@ import {
   resolveDoppelganger,
   resolveCursed,
   resolveCupid,
+  resolveCultLeader,
 } from "@/utils/resolveGameData";
 
 const useProcessGameData = (
   players: Player[],
   nightActions: NightAction,
   setPlayers: (players: Player[]) => void,
-  checkWinCondition: (players: Player[]) => string | null,
+  checkWinCondition: (players: Player[], currentCultMembers?: number[]) => string | null,
   setPhase: (phase: string) => void,
   setWinner: (winner: string | null) => void,
   setWitchState: (witchState: { usedSave: boolean; usedKill: boolean }) => void,
@@ -22,6 +23,8 @@ const useProcessGameData = (
   setHunterState: (hunterState: number | null) => void,
   setDoppelgangerState: (doppelgangerState: number | null) => void,
   doppelgangerState: number | null,
+  setCultMembers: (cultMembers: number[]) => void,
+  cultMembers: number[],
   setCupidPair: (cupidPair: number[] | null) => void,
   cupidPair: number[] | null,
 ) => {
@@ -37,6 +40,12 @@ const useProcessGameData = (
     resolveHunter(players, nightActions, deadIds);
     resolveCupid(deadIds, currentCupidPair);
 
+    const updatedCultMembers = resolveCultLeader(
+      players,
+      nightActions,
+      cultMembers,
+    );
+
     updatedPlayers = resolveCursed(updatedPlayers, deadIds);
     updatedPlayers = resolveDeaths(updatedPlayers, deadIds);
     updatedPlayers = resolveDoppelganger(updatedPlayers, nightActions, deadIds, doppelgangerState);
@@ -47,6 +56,7 @@ const useProcessGameData = (
     });
     setHunterState(nightActions.hunter ?? null);
     setDoppelgangerState(nightActions.doppelganger ?? null);
+    setCultMembers(updatedCultMembers);
 
     if (nightActions.cupid?.length === 2) {
       setCupidPair(nightActions.cupid);
@@ -59,7 +69,7 @@ const useProcessGameData = (
     setPlayers(updatedPlayers);
     setNightActions({});
 
-    const result = checkWinCondition(updatedPlayers);
+    const result = checkWinCondition(updatedPlayers, updatedCultMembers);
 
     if (result) {
       setWinner(result);
