@@ -38,12 +38,6 @@ export const ROLES = [
     side: "village",
   },
   {
-    id: "detective",
-    name: "Detective",
-    image: "/src/assets/detective.webp",
-    side: "village",
-  },
-  {
     id: "spellcaster",
     name: "Spellcaster",
     image: "/src/assets/spellcaster.webp",
