@@ -1,88 +1,103 @@
+import bodyguardImage from "@/assets/bodyguard.webp";
+import cultLeaderImage from "@/assets/cult-leader.webp";
+import cupidImage from "@/assets/cupid.png";
+import cursedImage from "@/assets/cursed.webp";
+import direWolfImage from "@/assets/dire-wolf.webp";
+import doppelgangerImage from "@/assets/doppelganger.webp";
+import hunterImage from "@/assets/hunter.webp";
+import seerImage from "@/assets/seer.png";
+import spellcasterImage from "@/assets/spellcaster.webp";
+import tannerImage from "@/assets/tanner.webp";
+import traitorImage from "@/assets/traitor.webp";
+import villagerImage from "@/assets/villager.webp";
+import werewolfImage from "@/assets/werewolf.webp";
+import witchImage from "@/assets/witch.webp";
+
 export const ROLES = [
   {
     id: "werewolf",
     name: "Werewolf",
-    image: "/src/assets/werewolf.webp",
+    image: werewolfImage,
     multi: true,
     side: "wolf",
   },
   {
     id: "villager",
     name: "Villager",
-    image: "/src/assets/villager.webp",
+    image: villagerImage,
     multi: true,
     side: "village",
   },
   {
     id: "bodyguard",
     name: "Bodyguard",
-    image: "/src/assets/bodyguard.webp",
+    image: bodyguardImage,
     side: "village",
   },
   {
     id: "seer",
     name: "Seer",
-    image: "/src/assets/seer.png",
+    image: seerImage,
     side: "village",
   },
   {
     id: "witch",
     name: "Witch",
-    image: "/src/assets/witch.webp",
+    image: witchImage,
     side: "village",
   },
   {
     id: "hunter",
     name: "Hunter",
-    image: "/src/assets/hunter.webp",
+    image: hunterImage,
     side: "village",
   },
   {
     id: "spellcaster",
     name: "Spellcaster",
-    image: "/src/assets/spellcaster.webp",
+    image: spellcasterImage,
     side: "village",
   },
   {
     id: "doppelganger",
     name: "Doppelganger",
-    image: "/src/assets/doppelganger.webp",
+    image: doppelgangerImage,
     side: "village",
   },
   {
     id: "traitor",
     name: "Traitor",
-    image: "/src/assets/traitor.webp",
+    image: traitorImage,
     side: "wolf",
   },
   {
     id: "cursed",
     name: "Cursed",
-    image: "/src/assets/cursed.webp",
+    image: cursedImage,
     side: "village",
   },
   {
     id: "dire-wolf",
     name: "Dire wolf",
-    image: "/src/assets/dire-wolf.webp",
+    image: direWolfImage,
     side: "wolf",
   },
   {
     id: "cult-leader",
     name: "Cult leader",
-    image: "/src/assets/cult-leader.webp",
+    image: cultLeaderImage,
     side: "third",
   },
   {
     id: "tanner",
     name: "Tanner",
-    image: "/src/assets/tanner.webp",
+    image: tannerImage,
     side: "third",
   },
   {
     id: "cupid",
     name: "Cupid",
-    image: "/src/assets/cupid.png",
+    image: cupidImage,
     side: "village",
   },
 ];
