@@ -2,7 +2,6 @@ import { ROLES } from "@/database/role";
 import { useGameDataStore } from "@/store/dataStore";
 import type { NightAction, Player } from "@/types/interfaces";
 import { Card, Image, Select, Typography } from "antd";
-import { useEffect } from "react";
 import Witch from "./Witch";
 import Cursed from "./Cursed";
 
@@ -15,7 +14,7 @@ interface NightProps {
 }
 
 const Night = ({ role, nightActions, setNightActions }: NightProps) => {
-  const { players, setWinner, turn, doppelgangerState } = useGameDataStore();
+  const { players, turn, doppelgangerState } = useGameDataStore();
 
   const checkAction = (roleId: string) => {
     switch (roleId) {
@@ -154,14 +153,6 @@ const Night = ({ role, nightActions, setNightActions }: NightProps) => {
     if (role.roleId === "doppelganger" && turn > 1) return true;
     return false;
   };
-
-  useEffect(() => {
-    const alivePlayers = players.filter((p) => p.alive);
-    const aliveWolves = alivePlayers.filter((p) => p.roleId === "werewolf");
-    if (aliveWolves.length === alivePlayers.length - aliveWolves.length - 1) {
-      setWinner("WOLF");
-    }
-  }, []);
 
   return (
     <Card

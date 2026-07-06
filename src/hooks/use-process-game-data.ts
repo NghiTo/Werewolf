@@ -80,6 +80,19 @@ const useProcessGameData = (
   };
 
   const startNight = () => {
+    const alivePlayers = players.filter((p) => p.alive);
+    const aliveWolves = alivePlayers.filter((p) => p.roleId === "werewolf");
+    const aliveVillagers = alivePlayers.filter((p) => p.roleId === "villager");
+
+    if (
+      alivePlayers.length === 3 &&
+      aliveWolves.length === 1 &&
+      aliveVillagers.length === 2
+    ) {
+      setWinner("WOLF");
+      return;
+    }
+
     setPhase("NIGHT");
   };
 
